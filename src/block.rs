@@ -1,6 +1,6 @@
 pub mod block {
     use std::time::SystemTime;
-    use serde::Serialize;
+    use serde::{Deserialize, Serialize};
     use sha2::{Sha256, Digest};
     use log::info;
     use postcard;   
@@ -8,7 +8,7 @@ pub mod block {
 
     const TARGET_HEXS: usize = 4;
 
-    #[derive(Serialize, Clone)]
+    #[derive(Serialize, Deserialize, Clone, Debug)]
     pub struct Block {
         timestamp: u128,
         transactions: String,
@@ -18,10 +18,6 @@ pub mod block {
         height: i32,
     }
 
-    pub struct Blockchain {
-        blocks: Vec<Block>,
-    }
-
     impl Block {
         pub fn new_genesis_block() -> Block {
             Block::new_block(String::from("Genesis Block"), String::from(""), 0).unwrap()
@@ -29,6 +25,10 @@ pub mod block {
 
         pub fn get_hash(&self) -> String {
             self.hash.clone()
+        }
+
+        pub fn get_prev_hash(&self) -> String{
+            self.prev_block_hash.clone()
         }
 
         pub fn new_block(data: String, prev_block_hash: String, height: usize) -> Result<Block> {
@@ -86,21 +86,6 @@ pub mod block {
             let result = hasher.finalize();
             self.hash = format!("{:x}", result);
 
-            Ok(())
-        }
-    }
-
-    impl Blockchain {
-        pub fn new() -> Blockchain {
-            Blockchain {
-                blocks: vec![Block::new_genesis_block()],
-            }
-        }
-
-        pub fn add_block(&mut self, data: String) -> Result<()> {
-            let prev: &Block = self.blocks.last().unwrap();
-            let new_block: Block = Block::new_block(data, prev.get_hash(), self.blocks.len())?;
-            self.blocks.push(new_block);
             Ok(())
         }
     }
