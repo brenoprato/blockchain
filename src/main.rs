@@ -1,18 +1,11 @@
+mod block;
 mod blockchain;
-use blockchain::blockchain::Blockchain;
-use anyhow::{Ok, Result};
+mod cli;
 
+use cli::Cli;
 
-fn main() -> Result<()> {
-    let mut blockchain: Blockchain = Blockchain::new()?;
-    /*let _ = blockchain.add_block("data1".to_string());
-    let _ = blockchain.add_block("data2".to_string());
-    let _ = blockchain.add_block("data3".to_string());*/
-
-    for b in blockchain.iter(){
-        print!("{:?} \n", b);
-    }
-
+fn main() -> anyhow::Result<()> {
+    let mut cli = Cli::new()?;
+    cli.run()?;
     Ok(())
-
 }
